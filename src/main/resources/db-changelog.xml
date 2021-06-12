@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="int" value="int" dbms="mysql, postgresql"/>
+    <property name="numeric" value="numeric" dbms="mysql, postgresql"/>
+    <property name="double" value="double" dbms="mysql,postgresql"/>
+    <property name="boolean" value="tinyint(1)" dbms="mysql"/>
+    <property name="boolean" value="boolean" dbms="postgresql"/>
+    <property name="varchar.small" value="varchar(120)" dbms="mysql, postgresql"/>
+    <property name="varchar.medium" value="varchar(255)" dbms="mysql, postgresql"/>
+    <property name="varchar.large" value="varchar(1000)" dbms="mysql, postgresql"/>
+    <property name="varchar.very_large" value="varchar(4000)" dbms="mysql, postgresql"/>
+    <property name="text" value="text" dbms="mysql, postgresql"/>
+    <property name="timestamp" value="timestamp" dbms="mysql, postgresql"/>
+    <property name="date" value="date" dbms="mysql, postgresql"/>
+    <property name="decimal" value="decimal" dbms="mysql, postgresql"/>
+    <property name="date.now" value="now()" dbms="mysql, postgresql"/>
+
+    <changeSet id="1" author="users">
+        <comment>
+            Create Table User, Role, UserRole, Authority, RoleAuthority,insert user admin
+        </comment>
+        <createTable tableName="users">
+            <column name="id" type="${int}" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="${varchar.medium}">
+                <constraints nullable="true"/>
+            </column>
+            <column name="email" type="${varchar.medium}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="${varchar.medium}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_enabled" type="${boolean}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_non_locked" type="${boolean}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="${timestamp}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="${varchar.small}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="${timestamp}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="${varchar.small}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="role">
+            <column name="id" type="${int}" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="${varchar.medium}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="${timestamp}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="${varchar.small}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="${timestamp}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="${varchar.small}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="user_role">
+            <column name="id" type="${int}" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="${int}">
+                <constraints nullable="false"
+                             referencedTableName="users"
+                             referencedColumnNames="id"
+                             foreignKeyName="fk_user_role_user_id"/>
+            </column>
+            <column name="role_id" type="${int}">
+                <constraints nullable="false"
+                             referencedTableName="role"
+                             referencedColumnNames="id"
+                             foreignKeyName="fk_user_role_role_id"/>
+            </column>
+            <column name="created_date" type="${timestamp}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="${varchar.small}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="${timestamp}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="${varchar.small}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="authority">
+            <column name="id" type="${int}" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="${varchar.medium}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="${timestamp}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="${varchar.small}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="${timestamp}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="${varchar.small}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="role_authority">
+            <column name="id" type="${int}" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="role_id" type="${int}">
+                <constraints nullable="false"
+                             referencedTableName="role"
+                             referencedColumnNames="id"
+                             foreignKeyName="fk_role_authority_role_id"/>
+            </column>
+            <column name="authority_id" type="${int}">
+                <constraints nullable="false"
+                             referencedTableName="authority"
+                             referencedColumnNames="id"
+                             foreignKeyName="fk_role_authority_authority_id"/>
+            </column>
+            <column name="created_date" type="${timestamp}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="${varchar.small}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="${timestamp}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="${varchar.small}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint columnNames="username,email"
+                             constraintName="users_unique_username"
+                             tableName="users"
+        />
+        <insert tableName="role">
+            <column name="name" value="System Admin"/>
+            <column name="created_date" value="${date.now}"/>
+            <column name="created_by" value="SuperAdmin"/>
+            <column name="updated_date" value="${date.now}"/>
+            <column name="updated_by" value="SuperAdmin"/>
+        </insert>
+        <insert tableName="users">
+            <column name="username" value="super_admin"/>
+            <column name="email" value="superadmin@email.com"/>
+            <column name="password" value="{bcrypt}$2a$10$y9tA3UcjC1bKrDOTvUGRT.n5dEmvtC.ZRFDnwn79/.sicR1IKsK9a"/>
+            <column name="is_enabled" value="1"/>
+            <column name="is_non_locked" value="1"/>
+            <column name="created_date" value="${date.now}"/>
+            <column name="created_by" value="SuperAdmin"/>
+            <column name="updated_date" value="${date.now}"/>
+            <column name="updated_by" value="SuperAdmin"/>
+        </insert>
+        <insert tableName="user_role">
+            <column name="user_id" value="1"/>
+            <column name="role_id" value="1"/>
+            <column name="created_date" value="${date.now}"/>
+            <column name="created_by" value="SuperAdmin"/>
+            <column name="updated_date" value="${date.now}"/>
+            <column name="updated_by" value="SuperAdmin"/>
+        </insert>
+    </changeSet>
+    <changeSet id="2" author="james">
+        <comment>Initial OAuth2 Server</comment>
+        <createTable tableName="oauth_client_details">
+            <column name="client_id" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="resource_ids" type="varchar(256)"/>
+            <column name="client_secret" type="varchar(256)"/>
+            <column name="scope" type="varchar(256)"/>
+            <column name="authorized_grant_types" type="varchar(256)"/>
+            <column name="web_server_redirect_uri" type="varchar(256)"/>
+            <column name="authorities" type="varchar(256)"/>
+            <column name="access_token_validity" type="int"/>
+            <column name="refresh_token_validity" type="int"/>
+            <column name="additional_information" type="varchar(4096)"/>
+            <column name="autoapprove" type="varchar(256)"/>
+        </createTable>
+        <createTable tableName="oauth_client_token">
+            <column name="token_id" type="varchar(256)"/>
+            <column name="token" type="LONGVARBINARY"/>
+            <column name="authentication_id" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_name" type="varchar(256)"/>
+            <column name="client_id" type="varchar(256)"/>
+        </createTable>
+        <createTable tableName="oauth_access_token">
+            <column name="token_id" type="varchar(256)"/>
+            <column name="token" type="LONGVARBINARY"/>
+            <column name="authentication_id" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_name" type="varchar(256)"/>
+            <column name="client_id" type="varchar(256)"/>
+            <column name="authentication" type="LONGVARBINARY"/>
+            <column name="refresh_token" type="varchar(256)"/>
+        </createTable>
+        <createTable tableName="oauth_refresh_token">
+            <column name="token_id" type="varchar(256)"/>
+            <column name="token" type="LONGVARBINARY"/>
+            <column name="authentication" type="LONGVARBINARY"/>
+        </createTable>
+        <createTable tableName="oauth_code">
+            <column name="oauth_code" type="varchar(256)"/>
+            <column name="authentication" type="LONGVARBINARY"/>
+        </createTable>
+        <createTable tableName="oauth_approvals">
+            <column name="userId" type="varchar(256)"/>
+            <column name="clientId" type="varchar(256)"/>
+            <column name="scope" type="varchar(256)"/>
+            <column name="status" type="varchar(10)"/>
+            <column name="expiresAt" type="timestamp"/>
+            <column name="lastModifiedAt" type="timestamp"/>
+        </createTable>
+        <createTable tableName="ClientDetails">
+            <column name="appId" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="resourceIds" type="varchar(256)"/>
+            <column name="appSecret" type="varchar(256)"/>
+            <column name="scope" type="varchar(256)"/>
+            <column name="grantTypes" type="varchar(256)"/>
+            <column name="redirectUrl" type="varchar(256)"/>
+            <column name="authorities" type="varchar(256)"/>
+            <column name="access_token_validity" type="int"/>
+            <column name="refresh_token_validity" type="int"/>
+            <column name="additionalInformation" type="varchar(4096)"/>
+            <column name="autoApproveScopes" type="varchar(256)"/>
+        </createTable>
+        <insert tableName="oauth_client_details">
+            <column name="client_id" value="clientIdPassword"/>
+            <column name="client_secret" value="{bcrypt}$2a$10$.1oDefMAs6WrvuNuobKbuuTXLgwkiDtBO7o1GhgUlwoUmmVzF44.."/>
+            <column name="scope" value="user"/>
+            <column name="authorized_grant_types" value="password,authorization_code,refresh_token"/>
+            <column name="access_token_validity" value="3600"/>
+            <column name="refresh_token_validity" value="3600"/>
+            <column name="autoapprove" value="true"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
